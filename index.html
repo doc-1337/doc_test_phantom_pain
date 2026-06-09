@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes">
+    <title>Калькулятор ризику фантомного болю після ампутації</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            background: #eef2f7;
+            margin: 0;
+            padding: 20px;
+            color: #1a2c3e;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 28px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+            overflow: hidden;
+            padding: 24px 20px 32px;
+        }
+
+        h1 {
+            font-size: 1.7rem;
+            font-weight: 600;
+            margin: 0 0 6px 0;
+            color: #1f6e43;
+            letter-spacing: -0.3px;
+        }
+
+        .sub {
+            color: #4a627a;
+            font-size: 0.85rem;
+            border-left: 3px solid #1f6e43;
+            padding-left: 12px;
+            margin-bottom: 24px;
+            font-weight: 400;
+        }
+
+        .card {
+            background: #f8fafd;
+            border-radius: 20px;
+            padding: 16px 18px;
+            margin-bottom: 20px;
+            transition: all 0.1s ease;
+        }
+
+        .card-title {
+            font-weight: 600;
+            font-size: 1rem;
+            margin-bottom: 14px;
+            color: #0b2b26;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .input-group {
+            margin-bottom: 16px;
+        }
+
+        label {
+            font-size: 0.85rem;
+            font-weight: 500;
+            display: block;
+            margin-bottom: 6px;
+            color: #2c4f6e;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px 14px;
+            font-size: 1rem;
+            border: 1px solid #cbdbe0;
+            border-radius: 16px;
+            background: white;
+            transition: 0.2s;
+            font-family: inherit;
+        }
+
+        input:focus, select:focus {
+            border-color: #1f6e43;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(31,110,67,0.2);
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-top: 8px;
+        }
+
+        .radio-group label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: normal;
+            cursor: pointer;
+            font-size: 0.95rem;
+        }
+
+        button {
+            background: #1f6e43;
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 14px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 40px;
+            margin-top: 12px;
+            margin-bottom: 20px;
+            cursor: pointer;
+            transition: 0.2s;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+        }
+
+        button:active {
+            transform: scale(0.97);
+            background: #155a38;
+        }
+
+        .result {
+            background: #eef3f0;
+            border-radius: 24px;
+            padding: 20px;
+            margin-top: 12px;
+        }
+
+        .risk-badge {
+            font-size: 1.3rem;
+            font-weight: 700;
+            padding: 8px 0;
+            border-radius: 40px;
+            text-align: center;
+            margin-bottom: 16px;
+        }
+
+        .high {
+            background: #ffebee;
+            color: #b71c1c;
+        }
+
+        .low {
+            background: #e0f2e9;
+            color: #1f6e43;
+        }
+
+        .value {
+            font-family: monospace;
+            font-size: 1rem;
+            background: white;
+            padding: 8px 12px;
+            border-radius: 20px;
+            display: inline-block;
+            margin-bottom: 12px;
+        }
+
+        hr {
+            margin: 16px 0;
+            border: none;
+            height: 1px;
+            background: #dce4ec;
+        }
+
+        .recommend {
+            font-size: 0.9rem;
+            line-height: 1.4;
+            color: #1e2f3d;
+        }
+
+        .footnote {
+            font-size: 0.7rem;
+            color: #6c86a3;
+            text-align: center;
+            margin-top: 24px;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 16px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>🧠 Фантомний біль</h1>
+    <div class="sub">Прогноз ризику після ампутації (логістична модель, 2026)</div>
+
+    <div class="card">
+        <div class="card-title">📌 Клінічні параметри</div>
+        
+        <div class="input-group">
+            <label>🗂️ Вік пацієнта (років)</label>
+            <input type="number" id="age" value="50" step="1" min="18" max="110">
+        </div>
+
+        <div class="input-group">
+            <label>⚡ Виражений передопераційний біль</label>
+            <div class="radio-group">
+                <label><input type="radio" name="preopPain" value="yes"> Так</label>
+                <label><input type="radio" name="preopPain" value="no" checked> Ні</label>
+            </div>
+        </div>
+
+        <div class="input-group">
+            <label>🦿 Рівень ампутації (проксимальний — вище коліна/ліктя)</label>
+            <div class="radio-group">
+                <label><input type="radio" name="level" value="proximal"> Проксимальний (високий)</label>
+                <label><input type="radio" name="level" value="distal" checked> Дистальний (низький)</label>
+            </div>
+        </div>
+
+        <div class="input-group">
+            <label>📍 Локалізація ампутованої кінцівки</label>
+            <div class="radio-group">
+                <label><input type="radio" name="location" value="lower" checked> Нижня кінцівка</label>
+                <label><input type="radio" name="location" value="upper"> Верхня кінцівка</label>
+            </div>
+        </div>
+
+        <div class="input-group">
+            <label>🔄 Множинні ампутації (більше однієї кінцівки)</label>
+            <div class="radio-group">
+                <label><input type="radio" name="multiple" value="yes"> Так</label>
+                <label><input type="radio" name="multiple" value="no" checked> Ні</label>
+            </div>
+        </div>
+    </div>
+
+    <button id="calcBtn">Розрахувати ризик</button>
+
+    <div id="resultArea" style="display: none;">
+        <div class="result">
+            <div id="riskBadge" class="risk-badge"></div>
+            <div><span class="value" id="scoreValue">S = </span></div>
+            <div><span class="value" id="probValue">Ймовірність P = </span></div>
+            <hr>
+            <div id="recommendText" class="recommend"></div>
+        </div>
+    </div>
+    <div class="footnote">
+        * Модель заснована на логістичній регресії (Hanley et al. 2024, адаптація під бойову травму). Поріг ризику 0.4732.
+    </div>
+</div>
+
+<script>
+    (function() {
+        // Отримуємо елементи
+        const ageInput = document.getElementById('age');
+        const preopYes = document.querySelector('input[name="preopPain"][value="yes"]');
+        const preopNo = document.querySelector('input[name="preopPain"][value="no"]');
+        const levelProx = document.querySelector('input[name="level"][value="proximal"]');
+        const levelDist = document.querySelector('input[name="level"][value="distal"]');
+        const locationLower = document.querySelector('input[name="location"][value="lower"]');
+        const locationUpper = document.querySelector('input[name="location"][value="upper"]');
+        const multipleYes = document.querySelector('input[name="multiple"][value="yes"]');
+        const multipleNo = document.querySelector('input[name="multiple"][value="no"]');
+        const calcBtn = document.getElementById('calcBtn');
+        const resultDiv = document.getElementById('resultArea');
+        const riskBadge = document.getElementById('riskBadge');
+        const scoreValueSpan = document.getElementById('scoreValue');
+        const probValueSpan = document.getElementById('probValue');
+        const recommendText = document.getElementById('recommendText');
+
+        // Константи моделі (коефіцієнти)
+        const BETA_AGE = 0.0527;        // на рік (відносно 50)
+        const BETA_PREOP_PAIN = 1.753;
+        const BETA_PROXIMAL = 2.083;
+        const BETA_LOWER_LIMB = 1.766;
+        const BETA_MULTIPLE = 1.231;
+        const THRESHOLD = 0.4732;        // поріг високого ризику
+
+        function computeRisk() {
+            // 1. Вік
+            let age = parseFloat(ageInput.value);
+            if (isNaN(age) || age < 18) age = 50;
+            if (age > 110) age = 110;
+            const ageContribution = (age - 50) * BETA_AGE;
+
+            // 2. Передопераційний біль
+            const preopPain = preopYes.checked ? 1 : 0;
+            const painContrib = preopPain * BETA_PREOP_PAIN;
+
+            // 3. Рівень ампутації (проксимальний)
+            const isProximal = levelProx.checked ? 1 : 0;
+            const proximalContrib = isProximal * BETA_PROXIMAL;
+
+            // 4. Локалізація (нижня кінцівка)
+            const isLower = locationLower.checked ? 1 : 0;
+            const locationContrib = isLower * BETA_LOWER_LIMB;
+
+            // 5. Множинні ампутації
+            const isMultiple = multipleYes.checked ? 1 : 0;
+            const multipleContrib = isMultiple * BETA_MULTIPLE;
+
+            // Сумарний показник S
+            let S = ageContribution + painContrib + proximalContrib + locationContrib + multipleContrib;
+            let probability = 1 / (1 + Math.exp(-S));
+            
+            // Фіксуємо до 3 знаків
+            probability = Math.min(0.9999, Math.max(0.0001, probability));
+            const riskClass = probability >= THRESHOLD ? 'high' : 'low';
+            
+            // Форматування виведення
+            scoreValueSpan.innerHTML = `Лінійний предиктор S = ${S.toFixed(4)}`;
+            probValueSpan.innerHTML = `Ймовірність фантомного болю: ${(probability * 100).toFixed(1)}%`;
+            
+            // Відображення бейджу та рекомендацій
+            if (riskClass === 'high') {
+                riskBadge.className = 'risk-badge high';
+                riskBadge.innerHTML = '⚠️ ВИСОКИЙ РИЗИК (≥47.3%)';
+                recommendText.innerHTML = `
+                    <strong>📌 Рекомендована превентивна терапія:</strong><br>
+                    • Периопераційний кетамін (низькі дози) + габапентиноїди (прегабалін/габапентин)<br>
+                    • Регіонарна анестезія (тривала блокада нерва, катетер)<br>
+                    • Мультимодальний підхід: НПЗП + парацетамол, уникнення центральної сенситизації<br>
+                    • Раннє втручання психолога/психіатра при ПТСР-симптомах<br>
+                    • План знеболення на 6-8 тижнів після операції
+                `;
+            } else {
+                riskBadge.className = 'risk-badge low';
+                riskBadge.innerHTML = '✅ ПОМІРНИЙ / НИЗЬКИЙ РИЗИК';
+                recommendText.innerHTML = `
+                    <strong>📌 Рекомендації:</strong><br>
+                    • Стандартне післяопераційне знеболення з моніторингом болю<br>
+                    • Превентивне призначення габапентину може бути розглянуто індивідуально<br>
+                    • Профілактика хронізації: контроль раннього післяопераційного болю (VAS <4)<br>
+                    • Скринінг на ПТСР через 4-6 тижнів (наявність тривоги збільшує ризик)
+                `;
+            }
+            resultDiv.style.display = 'block';
+        }
+
+        calcBtn.addEventListener('click', computeRisk);
+        // За бажанням – обрахувати одразу при завантаженні з початковими значеннями
+        window.addEventListener('DOMContentLoaded', () => {
+            computeRisk();
+        });
+    })();
+</script>
+</body>
+</html>
