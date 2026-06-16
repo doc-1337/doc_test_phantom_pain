@@ -3,7 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Трансфузійна терапія – v1.0</title>
+    <title>Трансфузійна терапія – авторська методика (2026)</title>
+    <meta name="description" content="Калькулятор трансфузійної терапії для пацієнтів з ампутаціями. Авторська методика корекції ОЦК, маси тіла та площі поверхні (PATRIOT, 2026).">
+    <link rel="manifest" href="./manifest.json">
+    <meta name="theme-color" content="#1f6e43">
     <style>
         * { box-sizing: border-box; font-family: system-ui, 'Segoe UI', Roboto, sans-serif; }
         body { background: #eef2f7; margin: 0; padding: 20px; }
@@ -18,7 +21,6 @@
         input, select { width: 100%; padding: 8px 10px; border: 1px solid #bdd3e0; border-radius: 10px; font-size: 0.9rem; }
         input:focus { border-color: #2c6e9e; outline: none; box-shadow: 0 0 0 3px rgba(44,110,158,0.15); }
         
-        /* ==================== ПОКРАЩЕНІ РАДІОКНОПКИ ==================== */
         .radio-group {
             display: flex;
             gap: 16px;
@@ -41,35 +43,13 @@
             min-width: 100px;
             justify-content: center;
         }
-        .radio-group label:hover {
-            background: #eef4f9;
-            border-color: #a0b8cc;
-        }
-        .radio-group input[type="radio"] {
-            width: 20px;
-            height: 20px;
-            accent-color: #267c4a;
-            margin: 0;
-            flex-shrink: 0;
-        }
-        .radio-group label:has(input:checked) {
-            background: #e3f5ec;
-            border-color: #267c4a;
-            box-shadow: 0 0 0 2px rgba(38, 124, 74, 0.15);
-        }
+        .radio-group label:hover { background: #eef4f9; border-color: #a0b8cc; }
+        .radio-group input[type="radio"] { width: 20px; height: 20px; accent-color: #267c4a; margin: 0; flex-shrink: 0; }
+        .radio-group label:has(input:checked) { background: #e3f5ec; border-color: #267c4a; box-shadow: 0 0 0 2px rgba(38,124,74,0.15); }
         @media (max-width: 480px) {
-            .radio-group {
-                flex-direction: column;
-                width: 100%;
-                gap: 10px;
-            }
-            .radio-group label {
-                width: 100%;
-                justify-content: center;
-                padding: 12px 16px;
-            }
+            .radio-group { flex-direction: column; width: 100%; gap: 10px; }
+            .radio-group label { width: 100%; justify-content: center; padding: 12px 16px; }
         }
-        /* =============================================================== */
         
         .amputation-section { background: #ffffff; border-radius: 16px; padding: 10px 14px; margin-top: 10px; border: 1px solid #e0eef5; max-height: 380px; overflow-y: auto; }
         .limb-row { margin-bottom: 12px; border-bottom: 1px dashed #cce0ea; padding-bottom: 10px; }
@@ -290,7 +270,7 @@
 
 <script>
     // ============================================================
-    // ПОЛНАЯ ЛОГИКА РАСЧЕТА (БЕЗ ИЗМЕНЕНИЙ)
+    // КУМУЛЯТИВНІ ВІДСОТКИ ВТРАТИ МАСИ
     // ============================================================
     const lossMap = {
         foot: 0.015, calf_lower: 0.027, calf_middle: 0.042, calf_upper: 0.059,
@@ -533,6 +513,17 @@
         
         document.getElementById('resultsArea').style.display = 'block';
         document.getElementById('resultsArea').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+    
+    // ============================================================
+    // РЕЄСТРАЦІЯ SERVICE WORKER (PWA)
+    // ============================================================
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('./service-worker.js')
+                .then(reg => console.log('Service Worker registered', reg))
+                .catch(err => console.log('Service Worker registration failed', err));
+        });
     }
     
     document.addEventListener('DOMContentLoaded', () => {
